@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    	<title>d3.js gauges</title>
+		
+		<style>
+		
+			body
+			{
+			  	font: 10px arial;
+			}
+
+ .main-chart {
+	background: #fff;
+}
+
+.easypiechart-panel {
+	text-align: center;
+	padding: 1px 0;
+	margin-bottom: 20px;
+	background-color: #fff;
+    box-shadow: 2px 2px 2px 2px #888888;
+}
+
+.placeholder h2 {
+	margin-bottom: 0px;
+}
+
+.donut {
+	width: 100%;
+}
+
+.easypiechart {
+	height: 45px;
+	margin: 20px auto 10px auto;
+}
+
+.easypiechart .percent {
+	font-size: 20px;
+	top: 38px;
+}
+
+.upper-txt {
+    font-size: 18px;
+    display: flex;
+    font-weight: 600;
+    font-family: serif;
+}
+
+ .subtxt {
+	font-size: 14px;
+    display: flex;
+    font-family: serif;
+	padding-top:5px;
+	color:#7b7777;
+}
+
+.header-label
+{
+	margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+#easypiechart-blue { color: #30a5ff;}
+
+ .chat-panel .panel-body {
+height: 450px;
+overflow-y: scroll;
+}
+ .chat-box {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+ .chat-box li {
+margin-bottom: 15px;
+padding-bottom: 5px;
+border-bottom: 1px dotted #808080;
+}
+ .chat-box li.left .chat-body {
+margin-left: 90px;
+}
+ .chat-box li .chat-body p {
+margin: 0;
+color: #8d8888;
+}
+.chat-img>img {
+    margin-left:20px;
+}
+footer p{
+font-size: 14px;
+}
+</style>
+		
+		<script src = "https://d3js.org/d3.v4.min.js"></script>
+		<script src="liquidFillGauge.js"></script>
+
+		<script>
+						
+				
+			var gauges = [];
+			
+			function createGauge(name, label, min, max)
+			{
+				var config = 
+				{
+					size: 120,
+					label: label,
+					min: undefined != min ? min : 0,
+					max: undefined != max ? max : 100,
+					minorTicks: 5
+				}
+				
+				var range = config.max - config.min;
+				config.yellowZones = [{ from: config.min + range*0.75, to: config.min + range*0.9 }];
+				config.redZones = [{ from: config.min + range*0.9, to: config.max }];
+				
+				gauges[name] = new Gauge(name + "GaugeContainer", config);
+				gauges[name].render();
+			}
+			
+			function createGauges()
+			{
+				createGauge("memory", "");
+				createGauge("cpu", "");
+				createGauge("network", "");
+				//createGauge("test", "Test", -50, 50 );
+			}
+			
+			function updateGauges()
+			{
+				for (var key in gauges)
+				{
+					var value = getRandomValue(gauges[key])
+					gauges[key].redraw(value);
+				}
+			}
+			
+			function getRandomValue(gauge)
+			{
+				var overflow = 0; //10;
+				return gauge.config.min - overflow + (gauge.config.max - gauge.config.min + overflow*2) *  Math.random();
+			}
+			
+			function initialize()
+			{
+				createGauges();
+				updateGauges();
+			//	setInterval(updateGauges, 5000);
+			}
+			
+		</script>
+		
+		
+	</head>
+	
+	<body onload="initialize()">
+		 <div class="container" style="margin-top: 20px;">  
+			 <div class="row header-label">
+				 <div class="col-md-12">
+                    <span>Fuel Stats</span>
+				 </div>
+			 </div>
+		<div class="row">
+			<div class="col-xs-6 col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-body easypiechart-panel">
+						<div class="col-md-12" style="margin-top: 20px;">
+							<div class="col-md-7" style="float:left">
+							<span class="upper-txt">Completed Refuels</span>
+							<span class="subtxt">Percentage of Fuel Uplifted</span>
+						</div>
+						<div class="col-md-5" style="float:right">
+								<span id="memoryGaugeContainer"></span>
+							</div>
+						</div>
+						<div class="easypiechart col-sm-12" id="easypiechart-blue" style="clear:both">
+							<span class="upper-txt" style="color: #30a5ff; font-size:15px">10 completed Refuels</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-body easypiechart-panel">
+						<div class="col-md-12" style="margin-top: 20px;">
+							<div class="col-md-7" style="float:left">
+							<span class="upper-txt">Volume uplifted</span>
+							<span class="subtxt">Percentage of Fuel Uplifted</span>
+						</div>
+						<div class="col-md-5" style="float:right">
+								<span id="cpuGaugeContainer"></span>
+							</div>
+						</div>
+						<div class="easypiechart col-sm-12" id="easypiechart-blue" style="clear:both">
+							<span class="upper-txt" style="color: #30a5ff; font-size:15px">xTD Delays 2</span>
+							<span class="upper-txt" style="color: #30a5ff;font-size:15px">6 No Delay Days</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-body easypiechart-panel">
+						<div class="col-md-12" style="margin-top: 20px;">
+							<div class="col-md-7" style="float:left">
+							<span class="upper-txt">Delays</span>
+							<span class="subtxt" style="text-align: left;">Percentage of delays for refueling</span>
+						</div>
+						<div class="col-md-5" style="float:right">
+								<span id="networkGaugeContainer"></span>
+							</div>
+						</div>
+						<div class="easypiechart col-sm-12" id="easypiechart-blue" style="clear:both">
+							<span class="upper-txt" style="color: #30a5ff;font-size:15px">Volume: 2,49,850</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>   
+	</body>
+	
+</html>
